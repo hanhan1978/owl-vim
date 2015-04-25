@@ -59,7 +59,7 @@ function! owl_vim#save()
     let body  = getbufline('my-own-buffer-new', 6, '$')
     "echo title
     "echo body
-    let postdata ={ "title" : title, "body" : join(body), "tags" : tags , "published" : '2' }
+    let postdata ={ "title" : title, "body" : join(body, "\n"), "tags" : tags , "published" : '2' }
     let fuga = webapi#http#post("http://127.0.0.1:3000/api/items/create", postdata)
     "echo fuga
 endfunction
