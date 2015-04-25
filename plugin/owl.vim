@@ -4,8 +4,8 @@ set cpo&vim
 
 " Write plugin code here
 
-function! owl_vim#list()
-    call owl_vim#readconf()
+function! owl.vim#list()
+    call owl.vim#readconf()
     let files = webapi#http#get(s:owl_vim_host. "/api/show/hanhan1978") 
     let lists = webapi#json#decode(files['content'])
     let length = len(lists['data']) 
@@ -16,16 +16,16 @@ function! owl_vim#list()
     let i = 0
     for dat in lists['data']
         call append(i, dat['id'] . "  " . dat['created_at'] . "  " . dat['title'] . "  ")
-        nmap <buffer> <cr> :call owl_vim#show() <cr>
+        nmap <buffer> <cr> :call owl.vim#show() <cr>
         unlet dat
         let i += 1
     endfor
 endfunction
 
-function! owl_vim#show()
+function! owl.vim#show()
     let lines = split(getline(".") , "  ")
     let item_id = lines[0]
-    call owl_vim#readconf()
+    call owl.vim#readconf()
     let files = webapi#http#get(s:owl_vim_host."/api/items/show/" . item_id) 
     let lists = webapi#json#decode(files['content'])
     "echo lists
@@ -46,7 +46,7 @@ function! owl_vim#show()
     call append(5, lists['body'])
 endfunction
 
-function! owl_vim#new()
+function! owl.vim#new()
     let fname = 'my-own-buffer-new'
     silent! execute 'new' fname
     setlocal buftype=nofile
@@ -59,19 +59,19 @@ function! owl_vim#new()
     call append(5, "")
 endfunction
 
-function! owl_vim#save()
+function! owl.vim#save()
     let title = getline(2)
     let tags = getline(4)
     let body  = getbufline('my-own-buffer-new', 6, '$')
     "echo title
     "echo body
     let postdata ={ "title" : title, "body" : join(body, "\n"), "tags" : tags , "published" : '2' }
-    call owl_vim#readconf()
+    call owl.vim#readconf()
     let fuga = webapi#http#post(s:owl_vim_host."/api/items/create", postdata)
     "echo fuga
 endfunction
 
-function! owl_vim#readconf()
+function! owl.vim#readconf()
     let fname = $HOME . "/.vimowlrc"
     if filereadable(fname) > 0
         let conf = readfile(fname)
@@ -86,9 +86,9 @@ function! owl_vim#readconf()
     endif
 endfunction
 
-command! -bar OwlList call owl_vim#list()
-command! -bar OwlNew call owl_vim#new()
-command! -bar OwlSave call owl_vim#save()
+command! -bar OwlList call owl.vim#list()
+command! -bar OwlNew call owl.vim#new()
+command! -bar OwlSave call owl.vim#save()
 
 
 
