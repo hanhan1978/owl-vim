@@ -5,7 +5,8 @@ set cpo&vim
 " Write plugin code here
 
 function! owl_vim#list()
-    let files = webapi#http#get("http://127.0.0.1:3000/api/show/hanhan1978") 
+    call owl_vim#readconf()
+    let files = webapi#http#get(s:owl_vim_host. "/api/show/hanhan1978") 
     let lists = webapi#json#decode(files['content'])
     let length = len(lists['data']) 
     let fname = 'my-own-buffer'
@@ -24,7 +25,8 @@ endfunction
 function! owl_vim#show()
     let lines = split(getline(".") , "  ")
     let item_id = lines[0]
-    let files = webapi#http#get("http://127.0.0.1:3000/api/items/show/" . item_id) 
+    call owl_vim#readconf()
+    let files = webapi#http#get(s:owl_vim_host."/api/items/show/" . item_id) 
     let lists = webapi#json#decode(files['content'])
     "echo lists
 
@@ -64,8 +66,24 @@ function! owl_vim#save()
     "echo title
     "echo body
     let postdata ={ "title" : title, "body" : join(body, "\n"), "tags" : tags , "published" : '2' }
-    let fuga = webapi#http#post("http://127.0.0.1:3000/api/items/create", postdata)
+    call owl_vim#readconf()
+    let fuga = webapi#http#post(s:owl_vim_host."/api/items/create", postdata)
     "echo fuga
+endfunction
+
+function! owl_vim#readconf()
+    let fname = $HOME . "/.vimowlrc"
+    if filereadable(fname) > 0
+        let conf = readfile(fname)
+        for line in conf
+            let mm = split(line , "=")
+            let key = substitute(mm[0], '^\s*\(.\{-}\)\s*$', '\1', '')
+            let val = substitute(mm[1], '^\s*\(.\{-}\)\s*$', '\1', '')
+            if key == 'host'
+                let s:owl_vim_host = val
+            endif
+        endfor
+    endif
 endfunction
 
 command! -bar OwlList call owl_vim#list()
