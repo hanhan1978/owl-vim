@@ -28,7 +28,11 @@ function! owl_vim#show()
     let lists = webapi#json#decode(files['content'])
     "echo lists
 
-    let fname = 'my-own-buffer-show'
+    let fname = 'my-own-buffer-show'.item_id
+    if bufnr(fname) > 0
+        silent! execute 'new' fname
+        bwipeout!
+    endif
     silent! execute 'new' fname
     setlocal buftype=nofile
     setlocal noswapfile 
